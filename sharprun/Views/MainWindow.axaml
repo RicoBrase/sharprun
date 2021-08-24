@@ -3,15 +3,40 @@
         xmlns:vm="using:sharprun.ViewModels"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        mc:Ignorable="d" d:DesignWidth="600" d:DesignHeight="350"
+        Width="600" Height="350"
+        WindowStartupLocation="CenterScreen"
         x:Class="sharprun.Views.MainWindow"
         Icon="/Assets/avalonia-logo.ico"
+        Opened="Window_OnOpened"
+        KeyDown="Window_OnKeyDown"
         Title="sharprun">
 
     <Design.DataContext>
         <vm:MainWindowViewModel/>
     </Design.DataContext>
 
-    <TextBlock Text="{Binding Greeting}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+    <StackPanel Margin="10">
+        <TextBox Text="{Binding Command}"
+             Name="CommandInput"
+             Watermark="Enter command...">
+        </TextBox>
 
+        <ListBox Name="AppList"
+                 Items="{Binding Apps}"
+                 Margin="0 10 0 0"
+                 MaxHeight="280"
+                 SelectedItem="{Binding SelectedApp}"
+                 SelectedIndex="{Binding SelectedIndex}"
+                 ScrollViewer.VerticalScrollBarVisibility="Auto">
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <Border Padding="4">
+                        <TextBlock Text="{Binding}"></TextBlock>
+                    </Border>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+    </StackPanel>
+    
 </Window>
