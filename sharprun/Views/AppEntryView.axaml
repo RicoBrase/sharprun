@@ -1,0 +1,27 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="using:sharprun.ViewModels"
+             mc:Ignorable="d" d:DesignWidth="600" d:DesignHeight="50"
+             x:Class="sharprun.Views.AppEntryView">
+    
+    <Design.DataContext>
+        <vm:AppEntryViewModel/>
+    </Design.DataContext>
+    
+    <StackPanel Spacing="4" Orientation="Horizontal">
+        <Border ClipToBounds="True">
+            <Panel Background="Transparent">
+                <Image Width="24" Stretch="Uniform" Source="{Binding Icon}"/>
+                <Panel IsVisible="{Binding Icon, Converter={x:Static ObjectConverters.IsNull}}">
+                </Panel>
+            </Panel>
+        </Border>
+        
+        <TextBlock Text="{Binding Name}" VerticalAlignment="Center"></TextBlock>
+        <TextBlock Text="|" VerticalAlignment="Center"></TextBlock>
+        <TextBlock Text="{Binding FileName}" VerticalAlignment="Center"></TextBlock>
+        
+    </StackPanel>
+</UserControl>

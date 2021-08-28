@@ -1,31 +1,25 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Linq;
+using System.Reactive.Linq;
 using ReactiveUI;
+using sharprun.Models;
 
 namespace sharprun.ViewModels
 {
     public class MainWindowViewModel : ViewModelBase
     {
-        private string _command = "";
-        private int _selectedApp;
-        private int _selectedIndex = -1;
-        private bool _selectionChanged;
+        private string? _search;
+        private int _selectedIndex;
+        private AppEntryViewModel? _selectedAppEntry;
+            public ObservableCollection<AppEntryViewModel> AppEntries { get; } = new();
 
-        public string Command
+        public string? Search
         {
-            get => _command;
-            set => this.RaiseAndSetIfChanged(ref _command, value);
-        }
-
-        public int SelectedApp
-        {
-            get => _selectedApp;
-            set
-            {
-                Command = Convert.ToString(value);
-                this.RaiseAndSetIfChanged(ref _selectedApp, value);
-            }
+            get => _search;
+            set => this.RaiseAndSetIfChanged(ref _search, value);
         }
 
         public int SelectedIndex
@@ -34,30 +28,58 @@ namespace sharprun.ViewModels
             set => this.RaiseAndSetIfChanged(ref _selectedIndex, value);
         }
 
-        public List<int> Apps => Enumerable.Range(1, 10).ToList();
+        public AppEntryViewModel? SelectedAppEntry
+        {
+            get => _selectedAppEntry;
+            set => this.RaiseAndSetIfChanged(ref _selectedAppEntry, value);
+        }
 
-        public void CloseApplication()
+        public ObservableCollection<AppEntryViewModel> SearchResults { get; } = new();
+
+        public MainWindowViewModel()
+        {
+            this.WhenAnyValue(x => x.Search)
+                .Throttle(TimeSpan.FromMilliseconds(200))
+                .ObserveOn(RxApp.MainThreadScheduler)
+                .Subscribe(DoSearch);
+        }
+        
+        private void DoSearch(string searchQuery)
+        {
+            SearchResults.Clear();
+            if (string.IsNullOrWhiteSpace(searchQuery))
+            {
+                AppEntries.ToList().ForEach(SearchResults.Add);   
+            }
+            else
+            {
+                AppEntries.Where(entry =>
+                        entry.Name.ToLower().StartsWith(searchQuery.ToLower())
+                        || entry.FileName.ToLower().StartsWith(searchQuery.ToLower()))
+                    .ToList()
+                    .ForEach(SearchResults.Add);
+            }
+        }
+
+        public static void CloseApplication()
         {
             Environment.Exit(0);
         }
 
         public void SelectNext()
         {
-            if (!_selectionChanged)
-            {
-                _selectionChanged = true;
-            }
-            SelectedIndex = (SelectedIndex + 1) % Apps.Count;
+            SelectedIndex = (SelectedIndex + 1) % SearchResults.Count;
         }
 
         public void SelectPrevious()
         {
-            if (!_selectionChanged)
-            {
-                SelectedIndex = 0;
-                _selectionChanged = true;
-            }
-            SelectedIndex = (SelectedIndex - 1 + Apps.Count) % Apps.Count;
+            SelectedIndex = (SelectedIndex - 1 + SearchResults.Count) % SearchResults.Count;
+        }
+
+        public void RunSelectedApp()
+        {
+            SelectedAppEntry?.Run();
+            CloseApplication();
         }
     }
 }
