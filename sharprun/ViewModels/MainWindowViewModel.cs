@@ -14,7 +14,9 @@ namespace sharprun.ViewModels
         private string? _search;
         private int _selectedIndex;
         private AppEntryViewModel? _selectedAppEntry;
-            public ObservableCollection<AppEntryViewModel> AppEntries { get; } = new();
+        
+        public ObservableCollection<AppEntryViewModel> AppEntries { get; } = new();
+        public ObservableCollection<AppEntryViewModel> SearchResults { get; } = new();
 
         public string? Search
         {
@@ -34,14 +36,12 @@ namespace sharprun.ViewModels
             set => this.RaiseAndSetIfChanged(ref _selectedAppEntry, value);
         }
 
-        public ObservableCollection<AppEntryViewModel> SearchResults { get; } = new();
-
         public MainWindowViewModel()
         {
             this.WhenAnyValue(x => x.Search)
                 .Throttle(TimeSpan.FromMilliseconds(200))
                 .ObserveOn(RxApp.MainThreadScheduler)
-                .Subscribe(DoSearch);
+                .Subscribe(DoSearch!);
         }
         
         private void DoSearch(string searchQuery)
@@ -58,6 +58,14 @@ namespace sharprun.ViewModels
                         || entry.FileName.ToLower().StartsWith(searchQuery.ToLower()))
                     .ToList()
                     .ForEach(SearchResults.Add);
+            }
+        }
+
+        public async void LoadIcons()
+        {
+            foreach (var appEntry in AppEntries)
+            {
+                await appEntry.LoadIcon();
             }
         }
 

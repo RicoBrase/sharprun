@@ -11,7 +11,7 @@
     </Design.DataContext>
     
     <StackPanel Spacing="4" Orientation="Horizontal">
-        <Border ClipToBounds="True">
+        <Border ClipToBounds="True" Margin="0 0 10 0">
             <Panel Background="Transparent">
                 <Image Width="24" Stretch="Uniform" Source="{Binding Icon}"/>
                 <Panel IsVisible="{Binding Icon, Converter={x:Static ObjectConverters.IsNull}}">

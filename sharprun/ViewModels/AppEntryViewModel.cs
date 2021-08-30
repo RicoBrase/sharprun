@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using Avalonia.Media.Imaging;
 using ReactiveUI;
 using sharprun.Models;
@@ -30,13 +31,19 @@ namespace sharprun.ViewModels
             {
                 FileName = "sample.desktop",
                 Name = "Sample",
-                Icon = "sample.png"
+                IconName = "sample.png"
             };
         }
 
         public void Run()
         {
             _appEntry.Run();
+        }
+
+        public async Task LoadIcon()
+        {
+            await using var imageStream = _appEntry.LoadIconBitmap();
+            Icon = imageStream is null ? null : await Task.Run(() => Bitmap.DecodeToWidth(imageStream, 24));
         }
     }
 }

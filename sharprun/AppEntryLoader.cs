@@ -58,7 +58,7 @@ namespace sharprun
                         appEntry.Exec = val;
                         break;
                     case "Icon":
-                        appEntry.Icon = val;
+                        appEntry.IconName = val;
                         break;
                     case "NoDisplay":
                         appEntry.Hidden = bool.Parse(val);

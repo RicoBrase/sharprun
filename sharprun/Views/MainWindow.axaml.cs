@@ -54,6 +54,7 @@ namespace sharprun.Views
             if (DataContext is MainWindowViewModel viewModel)
             {
                 AppEntryLoader.LoadEntriesFromDisk().ToList().ForEach(x => viewModel.AppEntries.Add(new AppEntryViewModel(x)));
+                viewModel.LoadIcons();
                 viewModel.Search = "";
             }
         }
